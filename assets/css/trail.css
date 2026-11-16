@@ -1,0 +1,86 @@
+/* 從海口到山頂 — 單元 3「越嶺古道」的樣式（基底變數在 ascent.css） */
+:root { --g0: #ecd3b4; --g1: #d9a06a; --g2: #b9682f; --g3: #7c3510; --tc: #2f6b5a; }
+@media (prefers-color-scheme: dark) { :root { --g0: #5a4330; --g1: #93603a; --g2: #cf8a4c; --g3: #f4c08a; } }
+.g0 { --gc: var(--g0); } .g1 { --gc: var(--g1); } .g2 { --gc: var(--g2); } .g3 { --gc: var(--g3); }
+.safe { border: 2px solid var(--peach); background: color-mix(in srgb, var(--peach) 9%, var(--card)); border-radius: 16px; padding: 14px 18px; margin: 4px 0 22px; }
+.safe p { font-size: 14.5px; }
+.safe b { color: var(--peach); font-size: 16px; }
+.safe-a { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px !important; }
+.safe-a .btn { font-size: 13.5px; min-height: 36px; }
+.safe-own { font-size: 14px; color: var(--muted); margin: -10px 0 18px; }
+.src { color: var(--teal); }
+.era-t { display: inline-block; font-family: var(--f-body); font-size: 12.5px; font-weight: 700; letter-spacing: .06em; padding: 1px 9px; border-radius: 999px; border: 1.5px solid var(--tc); color: var(--tc); margin-left: 6px; vertical-align: middle; line-height: 1.6; }
+@media (prefers-color-scheme: dark) { .era-t { color: color-mix(in srgb, var(--tc) 55%, #fff); border-color: color-mix(in srgb, var(--tc) 55%, #fff); } }
+.tr-hero h1 { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: clamp(40px, 7vw, 72px); margin: 4px 0 6px; }
+.tr-hero h1 .eras { display: inline-flex; gap: 4px; } .tr-hero h1 .era-t { font-size: 14px; margin: 0; }
+.tr-hero { background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 12%, transparent), transparent); }
+.tr-st { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 4px; }
+.tr-st dt { font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+.tr-st dd { margin: 0; font-size: 13px; color: var(--muted); }
+.tr-st b { font-family: var(--f-display); font-size: 22px; color: var(--ink); margin-right: 2px; font-variant-numeric: tabular-nums; }
+.tr-st.big b { font-size: 34px; }
+.facts.f4 { grid-template-columns: repeat(4, 1fr); }
+a.fact { color: var(--ink); text-decoration: none; }
+.tp-wrap { position: relative; margin-top: 12px; padding: 12px 10px 6px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.tp { display: block; width: 100%; overflow: visible; touch-action: pan-y; }
+.tp .gy line { stroke: var(--line); }
+.tp .gy text, .tp .gx text, .tp .ax { font-size: 11.5px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.tp .gy text { text-anchor: end; } .tp .gx text { text-anchor: middle; } .tp .gx line { stroke: var(--muted); }
+.tp .ref line { stroke: var(--sun); stroke-width: 2; stroke-dasharray: 6 5; }
+.tp .ref text { font-size: 12px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+.tp .pf-area { fill: var(--tc); opacity: .12; }
+.tp .tline { fill: none; stroke: var(--tc); stroke-width: 2.5; stroke-linejoin: round; }
+.tp .tlab { font-size: 12.5px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+.tp .gseg { fill: none; stroke: var(--gc); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.tp .cross { stroke: var(--ink); stroke-width: 1; opacity: .5; }
+.tp .poi line { stroke: var(--muted); stroke-width: .8; stroke-dasharray: 2 3; }
+.tp .poi circle { fill: var(--pc, var(--muted)); stroke: var(--card); stroke-width: 2; }
+.tp .poi text { font-size: 11.5px; fill: var(--ink); text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: 3px; }
+.tp .poi text.pn { font-size: 10.5px; font-weight: 700; }
+.k-post { --pc: var(--c-national); } .k-camp { --pc: var(--e1); } .k-shrine, .k-monument { --pc: var(--c-memorial); }
+.k-ruin, .k-spot { --pc: var(--c-archaeo); } .k-bridge { --pc: var(--teal); } .k-pass { --pc: var(--ink); } .k-gate { --pc: var(--muted); }
+.pk { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--pc, var(--muted)); margin-right: 6px; vertical-align: middle; }
+.gsw { display: inline-block; width: 18px; height: 6px; border-radius: 999px; background: var(--gc); margin-right: 5px; vertical-align: middle; }
+.gkeys .gk { margin-left: 12px; white-space: nowrap; }
+.pf-legend a { display: inline-flex; align-items: center; gap: 5px; color: var(--ink); text-decoration: none; font-size: 13.5px; }
+.pf-legend a i { width: 14px; height: 4px; border-radius: 2px; }
+.tp-wrap .tip span { display: flex; align-items: center; gap: 6px; }
+.tp-wrap .tip span i { width: 10px; height: 4px; border-radius: 2px; flex: none; }
+.tr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+.tr-card { display: flex; flex-direction: column; gap: 4px; height: 100%; padding: 14px 16px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); border-top: 5px solid var(--tc); color: var(--ink); text-decoration: none; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
+.tr-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.tr-h b { font-family: var(--f-display); font-size: 23px; }
+.tr-sub { color: var(--muted); font-size: 13px; }
+.tp-mini { margin: 4px 0; height: auto; }
+.tp-mini .gy text, .tp-mini .gx text, .tp-mini .ax { font-size: 10px; }
+.gbar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; gap: 2px; margin-top: 6px; }
+.gbar i { display: block; background: var(--gc); height: 100%; }
+.tl { display: grid; gap: 4px; }
+.tl li { display: grid; grid-template-columns: 4.2em 1fr; gap: 14px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+.tl-y { font-family: var(--f-display); font-size: 22px; font-weight: 700; color: var(--tc); line-height: 1.3; font-variant-numeric: tabular-nums; }
+@media (prefers-color-scheme: dark) { .tl-y { color: color-mix(in srgb, var(--tc) 55%, #fff); } }
+.tl-n { font-family: var(--f-display); font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; border-bottom: 3px solid var(--tc); }
+.tl p { font-size: 15px; margin-top: 2px; }
+.tl .tl-s { font-size: 12.5px; color: var(--muted); }
+.srcs { display: grid; gap: 4px; font-size: 14px; }
+.srcs li::before { content: "・"; color: var(--muted); }
+.notes { list-style: disc; padding-left: 1.2em; color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+.offl { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; }
+.offl li { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; }
+.offl b { font-family: var(--f-display); font-size: 17px; } .offl span { font-size: 14px; } .offl small { font-size: 12px; color: var(--muted); }
+.mini-t.pois small { display: block; font-size: 11.5px; color: var(--muted); }
+.mini-t td.pos { font-size: 12.5px; color: var(--muted); }
+.nearl { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
+.near { width: 100%; text-align: left; display: flex; flex-direction: column; padding: 12px 16px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.near b { font-family: var(--f-display); font-size: 18px; } .near small { color: var(--muted); font-size: 13px; }
+.tr-nav { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 960px) { .facts.f4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) {
+  .tr-st.big { gap: 4px 16px; } .tr-st.big b { font-size: 26px; }
+  .tp-wrap { margin-inline: calc(var(--gl) * -1 + 4px) calc(var(--gr) * -1 + 4px); padding: 10px 4px 4px; border-radius: 14px; }
+  .tl li { grid-template-columns: 3.6em 1fr; gap: 10px; }
+  .safe-a .btn { flex: 1 1 100%; }
+}
+@media (max-width: 640px) { .mini-t.pois th:nth-child(5), .mini-t.pois td:nth-child(5), .mini-t.pois th:nth-child(6), .mini-t.pois td:nth-child(6) { display: none; } }
+.pf-legend i.gsw { width: 18px; height: 6px; border-radius: 999px; background: var(--gc); }
+.pf-legend i.pk { width: 10px; height: 10px; border-radius: 50%; background: var(--pc, var(--muted)); margin-right: 0; }
