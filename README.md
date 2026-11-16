@@ -46,6 +46,8 @@ assets/js/ascent.js      路由與畫面
 assets/characters/       Allan 與阿拉蕾的圖檔
 data/raw/elev.json       每處文資的推估海拔、周圍高低差，與本島陸地的高度分布（build_elev.py 產生）
 data/alt.json            單元 1 的全部資料（build.py 產生）
+assets/og.png            分享到社群時的縮圖（1200×630）
+tools/og.html            縮圖的原稿：用瀏覽器以 1200×630 開啟後截圖，存成 assets/og.png（數字改了要跟著改）
 tools/fetch_dem.py       下載 Copernicus DEM 原始檔到 .cache/dem/（約 400 MB，不進 repo）
 tools/build_elev.py      由 DEM 取每處文資的海拔 → data/raw/elev.json（需要 numpy、rasterio）
 tools/build.py           產生 data/alt.json（只用標準函式庫）
@@ -81,6 +83,16 @@ python3 tools/build_elev.py
 - 知識網站 `sites-content.json` 的介紹文字寫明海拔、且與推估相差超過 50 公尺又超過 5% 的，改用文字的數字，頁面標「依介紹文字」（目前 5 處：阿里山觀象所、七家灣、巴蘭、富世、蕉埔邱家水窟）。
 - 座標周圍約 210 公尺見方內高低差超過 100 公尺的，標「海拔不確定」（目前 32 處）；知識網站 `coordNote` 註明「未能核對」的也標示。
 - 500 公尺以上文資的「上山理由」依名稱與主題標籤歸類，規則在 `build.py` 的 `REASONS`。
+
+## 待取得的資料（需在臺灣的網路下載）
+
+建置主機在境外，下列政府資料的主機擋連線，請在臺灣下載後放進 `data/raw/`：
+
+| 用途 | 檔案 | 放到 |
+|---|---|---|
+| 單元 2 河道 | 水利署「河川支流」（政府資料開放平臺 25780）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=RIVERLIN&filetype=SHP | `data/raw/wra/RIVERLIN.zip` |
+| 單元 2 流域 | 水利署「河川流域範圍圖」（9823）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=BASIN&filetype=SHP | `data/raw/wra/BASIN.zip` |
+| 海拔校正（選用） | 內政部 20 公尺 DTM（35430）：https://www.tgos.tw/MDE/VirtualDir_TC/Product/9981ede9-584a-4470-8c5c-dbe579d4ecb4/不分幅_全台及澎湖DEM.zip | `.cache/dtm/`（檔案大，不進 repo） |
 
 ## 部署
 
