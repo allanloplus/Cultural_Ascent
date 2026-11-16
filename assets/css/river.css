@@ -1,0 +1,27 @@
+/* 從海口到山頂 — 單元 2「溯河而上」的樣式（基底在 ascent.css、trail.css） */
+.tp.rv .chan { fill: var(--sea); opacity: .55; }
+.tp.rv .dense { fill: var(--sun); opacity: .14; }
+.tp.rv .kt line { stroke: var(--card); stroke-width: 1.5; }
+.tp.rv .kt text { font-size: 10.5px; font-weight: 700; fill: #fff; text-anchor: middle; }
+@media (prefers-color-scheme: dark) { .tp.rv .kt text { fill: #10202a; } }
+.tp.rv .bank { font-size: 12.5px; font-weight: 700; fill: var(--muted); letter-spacing: .1em; }
+.tp.rv .mouth { font-size: 12px; fill: var(--muted); text-anchor: middle; }
+.tp.rv .conf { font-size: 11.5px; font-weight: 700; fill: var(--teal); paint-order: stroke; stroke: var(--card); stroke-width: 3px; }
+.tp .dot { fill: var(--dc); stroke: var(--card); stroke-width: .8; cursor: pointer; }
+.tp .dot.fl { stroke: var(--ink); stroke-width: 1.4; }
+.tp .dot:hover { stroke: var(--sun); stroke-width: 2.5; }
+.tp .bed { fill: none; stroke: var(--sea); stroke-width: 2.5; }
+.tp .bed-a { fill: var(--sea); opacity: .15; }
+.tp .bmed { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+.pf-legend i.flk { background: var(--card); border: 2px solid var(--ink); width: 10px; height: 10px; border-radius: 50%; }
+.cp { display: grid; gap: 10px; }
+.cp li { display: grid; grid-template-columns: 7em 1fr 4.5em; gap: 12px; align-items: center; }
+.cp-l { font-family: var(--f-display); font-weight: 700; font-size: 18px; display: flex; flex-direction: column; line-height: 1.3; }
+.cp-l small { font-family: var(--f-body); font-weight: 400; font-size: 12px; color: var(--muted); }
+.cp-bar { display: flex; height: 18px; border-radius: 6px; overflow: hidden; gap: 2px; background: var(--paper-2); }
+.cp-bar i { display: block; background: var(--dc); min-width: 3px; }
+.cp-n { text-align: right; font-size: 13px; color: var(--muted); } .cp-n b { font-family: var(--f-display); font-size: 20px; color: var(--ink); }
+@media (max-width: 640px) { .cp li { grid-template-columns: 4.6em 1fr 3.6em; gap: 8px; } }
+.tp.rv .chan.gap { opacity: .25; }
+.tp.rv .gapt { font-size: 12px; fill: var(--muted); }
+.tp.rv .confl { stroke: var(--teal); stroke-width: 1; stroke-dasharray: 3 3; }

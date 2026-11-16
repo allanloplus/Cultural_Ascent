@@ -20,8 +20,8 @@
 | 單元 | 網址 | 狀態 |
 |---|---|---|
 | 1. 海拔總覽「文資住在多高」 | `#/` | 完成（已合併到 main） |
-| 2. 河流版「溯河而上」 | `#/river` | 等河道資料（只有預告頁） |
-| 3. 山徑版「越嶺古道」 | `#/trail`、`#/trail/<古道>` | 完成，待確認 |
+| 2. 河流版「溯河而上」 | `#/river`、`#/river/<河>` | 完成，待確認 |
+| 3. 山徑版「越嶺古道」 | `#/trail`、`#/trail/<古道>` | 完成（已合併到 main） |
 
 ## 單元 1：文資住在多高
 
@@ -31,6 +31,16 @@
 - **最高的十處**、**各縣市最高的文資**、**海拔怎麼算的**（含與介紹文字的比對表）。
 - **文資卡片**（`#/s/<縣市序號>/<文資 id>`）：照片、等級、年代、海拔、摘要，連回知識網站 `<縣市網址>/#map/<景點 id>`；在鐵道版有車站步行 15 分鐘可達的，連到鐵道版車站頁。
 - Allan 與阿拉蕾出現在開頭（全身像與對話）、事實卡表情、剖面、各段落與卡片；台詞裡的數字都從資料帶入（`ascent.js` 的 `duo()`、`say()`、`cmpTalk()` 等）。圖檔 `assets/characters/` 複製自 Cultural_Rail（源頭是 Cultural_Heritage），那邊更新時要再複製一次。
+
+## 單元 2：溯河而上
+
+做淡水河（主流＋新店溪、基隆河兩條支線）與濁水溪。蘭陽溪、高屏溪、曾文溪沿岸的文資太少（主流 2 公里內只有 8–15 處），算出的趨勢不可靠，所以不做；總覽頁有一張表說明各河的數字與原因。
+
+- **總覽（`#/river`）**：兩條河的卡片、「為什麼只做兩條」的數字表、河道怎麼來的。
+- **河流頁（`#/river/<id>`）**：5 則從資料算出的事實（開墾有沒有往上游推進、上中下游、最密集的河段、左右岸、淹水潛勢）；河流剖面（出海口到源頭橫向，文資依距出海口公里數排在左右兩岸，下方是河床高度，與單元 1 同一把對數高度尺；手機改直向，3 公里以上沒有文資的河段縮成一段並標出公里數）；創建年對照距出海口的散佈圖；上中下游的時代組成；淹水潛勢清單（保留文資地圖集的免責聲明）。
+- **收錄規則**：文資在該河的水利署流域範圍內，且離推算的主流或支線 1 公里內（淡水河）或 2 公里內（濁水溪，沿岸太少所以放寬）。公里數是投影到最近的河道點、沿河道量；支線＝匯流點公里數＋支線上的公里數。面向下游，左手邊為左岸。
+- **主流是推算的**：水利署「河川支流」圖層在寬河段沒有主流的線，所以 `tools/river_stem.py` 在流域內用地形推算水流（燒入水利署河川線、優先沿同名河川線上溯）。與水利署公布的主流長度比較：淡水河 146.8／158.7 公里、濁水溪 172.9／186.6 公里，約短 7%。
+- **「是否為舊渡口或河港」**：只在最密集河段的文資名稱含渡、碼頭、港時才提，否則寫「資料不足以說它是舊河港」。
 
 ## 單元 3：越嶺古道
 
@@ -68,6 +78,12 @@ tools/build.py           產生 data/alt.json（只用標準函式庫）
 data/raw/trails/         古道的原始軌跡與官方文字（抓一次就存檔，來源見下方）
 data/raw/trails/tracks.json  組好的軌跡、每 25 公尺的海拔、點位海拔（trail_elev.py 產生）
 data/trails.json         單元 3 的全部資料（build_trails.py 產生）
+data/raw/wra/            水利署流域範圍圖（BASIN.zip 原檔）、河川支流的流域內裁切（riverlin-subset.geojson）、河川基本資料
+data/raw/rivers/stems.json  推算的主流與支線（river_stem.py 產生）
+data/rivers.json         單元 2 的全部資料（build_rivers.py 產生）
+assets/css/river.css     單元 2 的樣式
+tools/river_stem.py      推算主流與支線（需要 numpy、rasterio、shapely、pyproj、pyshp）
+tools/build_rivers.py    產生 data/rivers.json（只用標準函式庫）
 tools/trail_elev.py      組裝古道軌跡並由 DEM 取海拔（需要 numpy、rasterio）
 tools/build_trails.py    產生 data/trails.json（只用標準函式庫）
 ```
@@ -96,6 +112,18 @@ python3 tools/fetch_dem.py
 python3 tools/build_elev.py
 ```
 
+文資清單或淹水潛勢更新後，重算單元 2：
+
+```bash
+python3 tools/build_rivers.py
+```
+
+河道要重新推算時（例如換新版水利署圖資）：
+
+```bash
+python3 tools/river_stem.py
+```
+
 古道資料不需要定期更新。要改歷史文字或加古道時，改 `tools/build_trails.py` 的 `TRAILS` 後：
 
 ```bash
@@ -121,8 +149,8 @@ python3 tools/trail_elev.py
 
 | 用途 | 檔案 | 放到 |
 |---|---|---|
-| 單元 2 河道 | 水利署「河川支流」（政府資料開放平臺 25780）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=RIVERLIN&filetype=SHP | `data/raw/wra/RIVERLIN.zip` |
-| 單元 2 流域 | 水利署「河川流域範圍圖」（9823）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=BASIN&filetype=SHP | `data/raw/wra/BASIN.zip` |
+| 單元 2 河道（已取得，2026-11-16） | 水利署「河川支流」（政府資料開放平臺 25780）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=RIVERLIN&filetype=SHP | 原檔約 21 MB 未存入；流域內裁切存為 `data/raw/wra/riverlin-subset.geojson` |
+| 單元 2 流域（已取得，2026-11-16） | 水利署「河川流域範圍圖」（9823）：https://gic.wra.gov.tw/gis/gic/API/Google/DownLoad.aspx?fname=BASIN&filetype=SHP | `data/raw/wra/BASIN.zip` |
 | 海拔校正（選用） | 內政部 20 公尺 DTM（35430）：https://www.tgos.tw/MDE/VirtualDir_TC/Product/9981ede9-584a-4470-8c5c-dbe579d4ecb4/不分幅_全台及澎湖DEM.zip | `.cache/dtm/`（檔案大，不進 repo） |
 
 ## 部署
@@ -143,6 +171,8 @@ python3 -m http.server 8000
 - 照片：Wikimedia Commons，作者與授權標在卡片照片下方，取自知識網站各縣市的 `images.json`。
 - 車站步行可達：姊妹站搭火車逛文資的 `data/lines/*.json`（推估）。
 - 玉山主峰 3,952 公尺為一般通用的高度，只作剖面頂端的參考線。
+- 河川與流域：經濟部水利署「河川流域範圍圖」（政府資料開放平臺 9823）、「河川支流」（25780）、「河川基本資料」（167895），政府資料開放授權條款第 1 版；前兩者 2026-11-16 由 Allan 在臺灣下載提供（建置主機在境外連不上 gic.wra.gov.tw）。
+- 淹水潛勢：經濟部水利署第三代淹水潛勢圖（2018），沿用文資地圖集 `data/risk.json` 的套疊結果；依《水災潛勢資料公開辦法》僅供防救災使用，不得作為土地使用管制或開發限制的依據，頁面保留此聲明。
 - 古道軌跡（2026-11-16 下載，存於 `data/raw/trails/`），都依政府資料開放授權條款第 1 版：
   - 林業及自然保育署所轄自然步道軌跡圖（政府資料開放平臺）：065 能高越嶺道西段（38461）、026 霞喀羅古道（26999）、154 八通關越道鹿鳴吊橋段（31149）。
   - 林業及自然保育署 台灣山林悠遊網的步道 KML（`https://recreation.forest.gov.tw/Files/RT/GE/122.kml`，浸水營古道西段、東段與 75 個點位、`154.kml` 鹿鳴段點位）與步道基本資料 API（`/mis/api/BasicInfo/Trail`）。山林悠遊網的開放資料註明適用政府資料開放平臺資料使用規範。
