@@ -56,7 +56,7 @@
       ["river", "#/river", "單元 2", "溯河而上", "從出海口到源頭，沿河的文資與高度剖面"],
       ["trail", "#/trail", "單元 3", "越嶺古道", "歷史古道的高度剖面、駐在所與遺址"]];
     return '<nav class="units" aria-label="三個單元">' + u.map(function (x) {
-      var soon = x[0] === "river";
+      var soon = false;
       return '<a class="unit' + (x[0] === cur ? " cur" : "") + (soon ? " soon" : "") + '" href="' + x[1] + '"' + (x[0] === cur ? ' aria-current="page"' : "") + ">" + ICON[x[0]] +
         '<span class="u-no">' + x[2] + "</span><b>" + x[3] + "</b><small>" + x[4] + "</small></a>";
     }).join("") + "</nav>";
@@ -100,7 +100,7 @@
       say("A", "scratch", "老實說，這裡的海拔都是推估。七家灣考古遺址的座標落在山坡上，直接取值就多了將近一千公尺。") +
       say("R", "explain", "所以我把介紹文字有寫海拔的 " + D.meta.check.n + " 處都拿來對過，中位差 " + D.meta.check.medAbs + " 公尺；差太多的 " + D.meta.check.adopted + " 處改用文字。") + "</div>" + methodBox() + "</section>" +
       '<section class="wrap sec"><div class="sec-h"><h2>接著往哪走</h2></div><div class="next-units">' +
-      '<a class="unit soon" href="#/river">' + ICON.river + '<span class="u-no">單元 2</span><b>溯河而上</b><small>從出海口往源頭走，看開墾是不是沿著河往上游推進。</small></a>' +
+      '<a class="unit" href="#/river">' + ICON.river + '<span class="u-no">單元 2</span><b>溯河而上</b><small>從出海口往源頭走，看開墾是不是沿著河往上游推進。</small></a>' +
       '<a class="unit" href="#/trail">' + ICON.trail + '<span class="u-no">單元 3</span><b>越嶺古道</b><small>500 公尺以上的文資只有 ' + high + ' 處；山上的歷史，要沿著古道看。</small></a></div></section></div>';
     paintControls();
     drawProfile();
@@ -362,6 +362,7 @@
       "<h3>高度尺</h3><p>剖面的縱軸是 ln(1 + 海拔 ÷ 5)：低處放大、高處壓縮，0 到 20 公尺和 500 到 2,000 公尺佔的高度差不多。全站（包括之後的河流與山徑剖面）都用同一把尺，刻度上的數字是實際公尺。</p>" +
       "<h3>本島土地的高度分布</h3><p>同一套地形資料，北緯 21.8–25.4 度、東經 120–122.1 度範圍內高於 0 公尺的格子，約每 90 公尺取一格統計；含綠島、蘭嶼、龜山島。</p>" +
       "<h2>鐵道連結</h2><p>文資卡片上的「搭火車」連到姊妹站搭火車逛文資，條件是該處在某個臺鐵車站步行 15 分鐘（推估）內；有多個車站時取最近的一站。</p>" +
+      "<h2>溯河而上</h2><p>河道與流域用經濟部水利署的河川流域範圍圖、河川支流與河川基本資料（政府資料開放授權條款第 1 版）。主流是在流域內用地形資料推算的，公里數與左右岸都是推估；做法見「溯河而上」頁面的「河道怎麼來的」。淹水潛勢沿用文資地圖集的套疊結果，僅供防救災參考，不得作為土地使用管制或開發限制的依據。</p>" +
       "<h2>越嶺古道</h2><p>軌跡取自林業及自然保育署與交通部觀光署的開放資料（政府資料開放授權條款第 1 版），海拔由同一套地形資料沿軌跡每 25 公尺取值。歷史內容只引用林業保育署、觀光署、原住民族委員會、文化部文化資產局與玉山國家公園管理處的公開資料，每一句都標出處。<b>僅供認識歷史，不可作為登山導航</b>；步道開放狀態與入山、入園申請請看各古道頁上的官方連結。</p>" +
       '<p class="hint">資料產生日期：' + esc(m.generated) + "</p></section>";
   }
@@ -557,16 +558,218 @@
   }
   function curTrail() { var m = location.hash.match(/#\/trail\/([^/]+)/); return m && TR ? TR.trails.filter(function (x) { return x.id === m[1]; })[0] : null; }
 
+  /* ---------- 單元 2：溯河而上 ---------- */
+  var RV = null, rvState = { stem: 0 };
+  function loadRV() { return RV ? Promise.resolve(RV) : getJSON("data/rivers.json").then(function (d) { RV = d; return d; }); }
+  var RFACE = { "開墾有沒有往上游推進": ["A", "think"], "上中下游": ["R", "explain"], "最密集的河段": ["R", "surprised"], "左岸、右岸": ["A", "point"], "淹水潛勢": ["A", "scratch"] };
+  function riverTalk(r) {
+    var f = r.facts, d = f[0], dense = f[2];
+    var a = r.id === "danshui" ? say("R", "think", "淡水河邊的老房子，是不是越往上游越晚蓋？") : say("R", "think", "濁水溪是臺灣最長的河，沿岸的文資多嗎？");
+    var b = r.id === "danshui" ? say("A", "scratch", "我原本也這樣猜。算出來" + (d.big === "成立" ? "成立" : "看不出來") + "：相關係數只有 " + r.rho.toFixed(2) + "。最密的是 " + dense.unit.split("・")[1] + "那一段，一口氣 " + dense.big + " 處。") :
+      say("A", "point", "不多，2 公里內只有 " + r.n + " 處，一半以上擠在西螺、溪州那一段。上游大多是山，文資清單幾乎到不了。");
+    return a + b;
+  }
+  function viewRivers() {
+    loadRV().then(function () {
+      var cards = RV.rivers.map(function (r) {
+        var st = r.stems[0];
+        return '<li><a class="tr-card" href="#/river/' + r.id + '" style="--tc:' + r.color + '"><span class="tr-h"><b>' + esc(r.name) + '</b></span><small class="tr-sub">' + esc(r.intro) + "</small>" +
+          '<dl class="tr-st"><div><dt>推算主流</dt><dd><b>' + st.len + '</b> 公里</dd></div><div><dt>收錄範圍</dt><dd><b>' + r.buf + '</b> 公里內</dd></div><div><dt>沿岸文資</dt><dd><b>' + r.n + "</b> 處</dd></div></dl></a></li>";
+      }).join("");
+      var skip = RV.skip.map(function (s) {
+        return "<tr><td><b>" + esc(s.name) + '</b></td><td class="n">' + s.basinN + '</td><td class="n">' + s.n1 + '</td><td class="n">' + s.n2 + "</td><td>" + esc(s.ex.join("、")) + "</td></tr>";
+      }).join("");
+      var dn = RV.rivers.filter(function (r) { return r.id === "danshui"; })[0];
+      app.innerHTML = '<div class="ascent rivers">' +
+        '<section class="home-hero has-duo"><div class="wrap"><p class="kicker">從海口到山頂・單元 2</p><h1>溯河而上</h1>' +
+        '<p class="home-sub">從出海口往源頭走，沿岸的文資依公里數排隊。</p>' +
+        '<p class="lede">河道與流域用經濟部水利署的公開資料推算，文資依距出海口的公里數排在左右兩岸，下方是同一把高度尺的河床剖面。開頭的事實都由資料算出；趨勢不明顯的，就照實說看不出來。</p>' +
+        duo("五條大河，每一條都能沿著走一遍嗎？", "我算過了：淡水河兩岸 1 公里內有 " + dn.n + " 處，其他河少很多。所以先做淡水河和濁水溪。") +
+        units("river") + "</div></section>" +
+        '<section class="wrap sec"><div class="sec-h"><h2>兩條河</h2></div><ul class="tr-cards">' + cards + "</ul></section>" +
+        '<section class="wrap sec"><div class="sec-h"><h2>為什麼只做兩條</h2><p>蘭陽溪、高屏溪、曾文溪</p></div>' +
+        '<div class="talk">' + say("R", "sad", "蘭陽溪、高屏溪、曾文溪不做嗎？") + say("A", "scratch", "沿岸的文資太少了。只有個位數或十幾處，算「越上游越晚」或「哪一段最密」都不可靠，硬做只會得到湊出來的結論。") + "</div>" +
+        '<div class="method-b" style="overflow-x:auto"><table class="mini-t"><thead><tr><th>河川</th><th class="n">流域內</th><th class="n">主流 1 公里內</th><th class="n">2 公里內</th><th>2 公里內的例子</th></tr></thead><tbody>' + skip + "</tbody></table>" +
+        '<p class="hint" style="margin-top:6px">對照：淡水河主流與兩條支線 1 公里內 ' + dn.n + " 處。曾文溪的流域不含臺南市區（市區屬鹽水溪流域）。數字用和淡水河、濁水溪相同的方法推算；以後若文資清單增加，再重新評估。</p></div></section>" +
+        '<section class="wrap sec" style="padding-bottom:56px"><div class="sec-h"><h2>河道怎麼來的</h2></div>' + riverMethod() + "</section></div>";
+    });
+  }
+  function riverMethod() {
+    return '<div class="method-b"><ul>' +
+      "<li>水利署「河川支流」圖層在寬河段沒有主流的線（主流畫在另一個河道面圖層），所以主流是<b>推算</b>的：在水利署「河川流域範圍圖」的流域內，用地形資料（約 90 公尺網格）推算水流，並讓水流沿著水利署的河川線走，再從出海口往集水面積最大的方向、優先沿著水利署標為同名河川的線上溯。</li>" +
+      "<li>淡水河的新店溪、基隆河另外推算成支線，公里數＝匯流點的公里數＋支線上的公里數。</li>" +
+      "<li>文資投影到最近的河道上，量距出海口的公里數；面向下游，左手邊為左岸。收錄範圍：淡水河 1 公里、濁水溪 2 公里（濁水溪沿岸太少，所以放寬）。</li>" +
+      "<li>河床高度沿推算的河道取值，並由下游往上游取累積最大值（河水不會往上流），去掉橋梁與樹冠造成的突起。</li>" +
+      "<li>資料來源：" + RV.meta.src.map(esc).join("、") + "，政府資料開放授權條款第 1 版；地形為 Copernicus DEM。</li></ul></div>";
+  }
+  /* 河流剖面：橫向（桌機，公里數等比例）或直向（手機，沒有文資的長河段壓縮成一小段並標出公里數） */
+  function riverChart(r, si, W) {
+    var st = r.stems[si], rows = r.sites.filter(function (o) { return o.s === si; });
+    var vert = W < 640, km0 = st.at, km1 = st.at + st.len, span = km1 - km0, d = 6, ch = 22;
+    var segs = [];   /* 公里 → 沿河方向的像素：[起公里, 迄公里, 起像素, 每公里像素] */
+    var pxk, len, bin;
+    if (!vert) {
+      var pad = 34; len = W - pad - 16; pxk = len / span; bin = d / pxk;
+      segs = [[km0, km1, pad, pxk]];
+    } else {
+      /* 直向：每 0.5 公里一格，格高剛好放得下這一格的點（放不下就換行）；連續 3 公里以上沒有文資，縮成一段並標出公里數 */
+      var capL = Math.floor((W / 2 - ch / 2 - 18) / d), B = 0.5, nb = Math.ceil(span / B), cntb = [];
+      for (var i = 0; i < nb; i++) cntb.push({ L: 0, R: 0 });
+      rows.forEach(function (o) { var k = Math.min(nb - 1, Math.floor((o.m - km0) / B)); cntb[k][o.b]++; });
+      var px = 30, i2 = 0;
+      while (i2 < nb) {
+        var c = cntb[i2];
+        if (c.L || c.R) { var hgt = Math.max(Math.ceil(Math.max(c.L, c.R) / capL), 1) * d + 4; segs.push([km0 + i2 * B, km0 + (i2 + 1) * B, px, hgt / B]); px += hgt; i2++; continue; }
+        var j = i2; while (j < nb && !cntb[j].L && !cntb[j].R) j++;
+        var ka = km0 + i2 * B, kb = Math.min(km1, km0 + j * B);
+        if (kb - ka >= 3) { segs.push([ka, kb, px, 40 / (kb - ka), 1]); px += 40; }
+        else { segs.push([ka, kb, px, 8 / B]); px += (kb - ka) * 8 / B; }
+        i2 = j;
+      }
+      bin = B; len = px + 30;
+    }
+    function A(km) { /* 公里 → 沿河像素 */
+      for (var i = 0; i < segs.length; i++) { var g = segs[i]; if (km <= g[1] + 1e-9 || i === segs.length - 1) return g[2] + (Math.max(km, g[0]) - g[0]) * g[3]; }
+    }
+    var cnt = {}, mxs = { L: 0, R: 0 };
+    var placed = rows.map(function (o) { var b = Math.floor((o.m - km0) / bin), key = b + o.b; cnt[key] = (cnt[key] || 0) + 1; mxs[o.b] = Math.max(mxs[o.b], cnt[key]); return { o: o, b: b, k: cnt[key] - 1 }; });
+    var sR = vert ? W / 2 : Math.max(40, mxs.R * d + 16), sL = vert ? W / 2 : Math.max(40, mxs.L * d + 16), elevH = vert ? 0 : 150, s = [];
+    var H = vert ? len : 26 + sR + ch + sL + 62 + elevH + 34;
+    var cy = 26 + sR + ch / 2;
+    function P(km, lat) { /* lat：離河道中心的像素，正＝右岸 */
+      if (vert) return [W / 2 - lat, len - A(km)];      /* 出海口在下、源頭在上；面向下游（往下），右岸在畫面左邊 */
+      return [A(km), cy - lat];
+    }
+    var dense = r.facts[2].range;
+    if (dense[1] > km0 && dense[0] < km1) {
+      var p0 = P(Math.max(km0, dense[0]), 0), p1 = P(Math.min(km1, dense[1]), 0);
+      s.push(vert ? '<rect class="dense" x="0" y="' + p1[1] + '" width="' + W + '" height="' + (p0[1] - p1[1]) + '"/>' : '<rect class="dense" x="' + p0[0] + '" y="16" width="' + (p1[0] - p0[0]) + '" height="' + (sR + ch + sL + 6) + '"/>');
+    }
+    segs.forEach(function (g) {
+      var a = P(g[0], 0), b = P(g[1], 0);
+      if (vert) s.push('<rect class="chan' + (g[4] ? " gap" : "") + '" x="' + (W / 2 - ch / 2) + '" y="' + b[1] + '" width="' + ch + '" height="' + (a[1] - b[1]) + '"/>' +
+        (g[4] ? '<text class="gapt" x="' + (W / 2 + ch / 2 + 8) + '" y="' + ((a[1] + b[1]) / 2 + 4) + '">⋯ ' + (g[1] - g[0]).toFixed(0) + " 公里沒有文資</text>" : ""));
+      else s.push('<rect class="chan" x="' + a[0] + '" y="' + (a[1] - ch / 2) + '" width="' + (b[0] - a[0]) + '" height="' + ch + '" rx="8"/>');
+    });
+    var step = span > 100 ? 20 : span > 40 ? 10 : 5;
+    for (var k = Math.ceil(km0 / step) * step; k <= km1 + 1e-6; k += step) {
+      var inGap = segs.some(function (g) { return g[4] && k > g[0] && k < g[1]; });
+      if (inGap) continue;
+      var p = P(k, 0);
+      s.push('<g class="kt"><text x="' + p[0] + '" y="' + (p[1] + 4) + '">' + k + "</text></g>");
+    }
+    if (si === 0) r.stems.slice(1).forEach(function (b) { var p = P(b.at, 0); s.push(vert ? '<text class="conf" x="' + (W / 2 + ch / 2 + 4) + '" y="' + (p[1] - 6) + '">← ' + esc(b.name) + "匯入</text>" : '<line class="confl" x1="' + p[0] + '" x2="' + p[0] + '" y1="' + (p[1] + ch / 2) + '" y2="' + (26 + sR + ch + sL + 6) + '"/><text class="conf" x="' + p[0] + '" y="' + (26 + sR + ch + sL + 20) + '" text-anchor="middle">' + esc(b.name) + "匯入</text>"); });
+    var col = state.color === "cat" ? "lv" : "ev";
+    placed.forEach(function (q) {
+      var o = D.sites[q.o.i], km = km0 + (q.b + .5) * bin, cap = vert ? Math.floor((W / 2 - ch / 2 - 18) / d) : 9999;
+      var lane = q.k % cap, sub = Math.floor(q.k / cap), off = ch / 2 + 4 + d / 2 + lane * d;
+      var p = P(km, q.o.b === "R" ? off : -off);
+      if (vert) { var y0 = len - A(km0 + q.b * bin); p[1] = y0 - 2 - d / 2 - sub * d; }
+      s.push('<circle class="dot ' + col + (col === "ev" ? o.r : o.k) + (q.o.fl >= 3 ? " fl" : "") + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (d / 2 - .4) + '" data-i="' + q.o.i + '" data-rv="' + r.sites.indexOf(q.o) + '"/>');
+    });
+    if (vert) s.push('<text class="bank" x="8" y="16">右岸</text><text class="bank" x="' + (W - 8) + '" y="16" text-anchor="end">左岸</text><text class="mouth" x="' + (W / 2) + '" y="14">源頭 ↑</text><text class="mouth" x="' + (W / 2) + '" y="' + (len - 8) + '">' + (si ? "↓ 匯入主流" : "↓ 出海口") + "</text>");
+    else {
+      s.push('<text class="bank" x="2" y="' + (cy - ch / 2 - 6) + '">右岸↑</text><text class="bank" x="2" y="' + (cy + ch / 2 + 16) + '">左岸↓</text>');
+      var m0 = P(km0, 0), m1 = P(km1, 0);
+      s.push('<text class="mouth" x="' + m0[0] + '" y="' + (26 + sR + ch + sL + 36) + '" text-anchor="start">← ' + (si ? "匯入主流" : "出海口") + '</text><text class="mouth" x="' + m1[0] + '" y="' + (26 + sR + ch + sL + 36) + '" text-anchor="end">源頭 →</text>');
+      var top = 26 + sR + ch + sL + 70, umax = U(4000), Y = function (h) { return top + elevH - U(h) / umax * elevH; };
+      [0, 10, 50, 200, 1000, 3000].forEach(function (h) { s.push('<g class="gy"><line x1="34" x2="' + (W - 16) + '" y1="' + Y(h) + '" y2="' + Y(h) + '"/><text x="30" y="' + (Y(h) + 4) + '">' + num(h) + "</text></g>"); });
+      var dd = st.prof.map(function (p, i) { return (i ? "L" : "M") + P(p[0], 0)[0].toFixed(1) + " " + Y(p[1]).toFixed(1); }).join("");
+      s.push('<path class="bed-a" d="' + dd + "L" + m1[0] + " " + Y(0) + "L" + m0[0] + " " + Y(0) + 'Z"/><path class="bed" d="' + dd + '"/>');
+      s.push('<text class="ax" x="34" y="' + (top - 10) + '">河床高度（公尺；與單元 1 同一把高度尺，低處放大）</text>');
+    }
+    return { svg: s.join(""), W: W, H: H };
+  }
+  function riverElevV(r, si, W) { /* 手機：河床剖面另畫一張橫的 */
+    var st = r.stems[si], km0 = st.at, km1 = st.at + st.len, pad = 40, H = 170, umax = U(4000), s = [];
+    var X = function (k) { return pad + (k - km0) / (km1 - km0) * (W - pad - 10); }, Y = function (h) { return 14 + (1 - U(h) / umax) * (H - 40); };
+    [0, 10, 50, 200, 1000, 3000].forEach(function (h) { s.push('<g class="gy"><line x1="' + pad + '" x2="' + (W - 10) + '" y1="' + Y(h) + '" y2="' + Y(h) + '"/><text x="' + (pad - 4) + '" y="' + (Y(h) + 4) + '">' + num(h) + "</text></g>"); });
+    var dd = st.prof.map(function (p, i) { return (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1); }).join("");
+    s.push('<path class="bed-a" d="' + dd + "L" + X(km1) + " " + Y(0) + "L" + X(km0) + " " + Y(0) + 'Z"/><path class="bed" d="' + dd + '"/>');
+    s.push('<text class="ax" x="' + pad + '" y="' + (H - 6) + '">' + km0.toFixed(0) + ' 公里（下游）</text><text class="ax" x="' + (W - 10) + '" y="' + (H - 6) + '" text-anchor="end">' + km1.toFixed(0) + " 公里（上游）</text>");
+    return '<svg class="tp" viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="河床高度剖面">' + s.join("") + "</svg>";
+  }
+  function scatterSVG(r, W) {
+    var pts = r.sites.filter(function (o) { var x = D.sites[o.i]; return x.y != null && x.k !== 6; }), H = 260, pl = 46, pr = 12, pt = 12, pb = 30;
+    var kmax = Math.max.apply(null, r.stems.map(function (s) { return s.at + s.len; })), y0 = 1600, y1 = 2010;
+    pts.forEach(function (o) { var y = D.sites[o.i].y; if (y < y0) y0 = Math.floor(y / 100) * 100; });
+    var kmMax = Math.min(kmax, Math.ceil(Math.max.apply(null, pts.map(function (o) { return o.m; })) / 10) * 10 + 5);
+    var X = function (k) { return pl + k / kmMax * (W - pl - pr); }, Y = function (y) { return pt + (y1 - y) / (y1 - y0) * (H - pt - pb); }, s = [];
+    for (var y = Math.ceil(y0 / 100) * 100; y <= y1; y += 100) s.push('<g class="gy"><line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + Y(y) + '" y2="' + Y(y) + '"/><text x="' + (pl - 4) + '" y="' + (Y(y) + 4) + '">' + y + "</text></g>");
+    for (var k = 0; k <= kmMax; k += kmMax > 60 ? 20 : 10) s.push('<g class="gx"><text x="' + X(k) + '" y="' + (H - 10) + '">' + k + "</text></g>");
+    s.push('<text class="ax" x="' + (W - pr) + '" y="' + (pt + 10) + '" text-anchor="end">橫軸：距出海口（公里）；縱軸：創建年</text>');
+    pts.forEach(function (o) { var x = D.sites[o.i]; s.push('<circle class="dot ev' + x.r + '" cx="' + X(o.m).toFixed(1) + '" cy="' + Y(x.y).toFixed(1) + '" r="3.2" data-i="' + o.i + '"><title>' + esc(x.n) + "：" + x.y + " 年、距出海口 " + o.m.toFixed(1) + " 公里</title></circle>"); });
+    r.bins.filter(function (b) { return b[2] >= 5 && b[0] < kmMax; }).forEach(function (b) { s.push('<line class="bmed" x1="' + X(b[0]) + '" x2="' + X(Math.min(b[1], kmMax)) + '" y1="' + Y(b[3]) + '" y2="' + Y(b[3]) + '"><title>' + b[0] + "–" + b[1] + " 公里中位數 " + b[3] + " 年</title></line>"); });
+    return '<svg class="tp" viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="創建年對照距出海口距離的散佈圖">' + s.join("") + "</svg>";
+  }
+  function viewRiver(id) {
+    loadRV().then(function () {
+      var r = RV.rivers.filter(function (x) { return x.id === id; })[0];
+      if (!r) { location.replace("#/river"); return; }
+      if (rvState.id !== id) { rvState = { stem: 0, id: id }; }
+      var st = r.stems[0];
+      var f = r.facts.map(function (x, i) {
+        var ff = RFACE[x.k] || ["A", "smile"], word = !/^[\d,.%：]+$/.test(x.big);
+        return '<li><div class="fact" style="--i:' + i + '"><img class="fact-face" src="assets/characters/' + (ff[0] === "R" ? "arale-" : "allan-") + ff[1] + '.webp" alt="" width="60" height="60"><span class="fact-k">' + esc(x.k) + '</span><span class="fact-big"><b' + (word ? ' class="word"' : "") + ">" + esc(x.big) + "</b><i>" + esc(x.unit) + '</i></span><span class="fact-t">' + esc(x.t) + "</span>" + (x.flood ? '<span class="fact-go">' + esc(RV.meta.floodNote.split("。")[1] || "") + "</span>" : "") + "</div></li>";
+      }).join("");
+      var tabs = r.stems.length > 1 ? '<div class="flt-g" role="group" aria-label="河段"><span class="flt-l">河段</span><div class="seg">' + r.stems.map(function (s, i) { return '<button type="button" data-stem="' + i + '" aria-pressed="' + (rvState.stem === i) + '">' + esc(s.name.replace(/（.*）/, "")) + "</button>"; }).join("") + "</div></div>" : "";
+      var comp = r.comp.map(function (c, j) {
+        var tot = c.n || 1;
+        return '<li><span class="cp-l">' + ["下游", "中游", "上游"][j] + "<small>" + c.lo.toFixed(0) + "–" + c.hi.toFixed(0) + ' 公里</small></span><span class="cp-bar">' + c.eras.map(function (v, e) { return v ? '<i class="ev' + e + '" style="flex:' + v + '" title="' + esc(D.eras[e].name) + " " + v + ' 處"></i>' : ""; }).join("") + '</span><span class="cp-n"><b>' + c.n + "</b> 處</span></li>";
+      }).join("");
+      var fl = r.sites.filter(function (o) { return o.fl >= 3; }).map(function (o) { var x = D.sites[o.i]; return '<li><button type="button" class="near" data-open="' + o.i + '"><b>' + esc(x.n) + "</b><small>距出海口 " + o.m.toFixed(1) + " 公里・" + (o.b === "L" ? "左岸" : "右岸") + "・模擬淹水 " + esc(["", "0–0.3", "0.3–0.5", "0.5–1", "1–2", "2–3", "3 以上"][o.fl]) + " 公尺</small></button></li>"; }).join("");
+      app.innerHTML = '<div class="ascent river" style="--tc:' + r.color + '"><section class="lhero tr-hero"><div class="wrap"><a class="back" href="#/river">← 溯河而上</a>' +
+        '<p class="kicker">溯河而上・收錄河道兩側 ' + r.buf + " 公里</p><h1>" + esc(r.name) + '</h1><p class="home-sub">' + esc(r.intro) + "</p>" +
+        '<dl class="tr-st big"><div><dt>推算主流</dt><dd><b>' + st.len + "</b> 公里</dd></div><div><dt>水利署主流長度</dt><dd><b>" + r.official + "</b> 公里</dd></div><div><dt>沿岸文資</dt><dd><b>" + r.n + "</b> 處</dd></div><div><dt>流域內</dt><dd><b>" + r.basinN + "</b> 處</dd></div></dl>" +
+        '<div class="talk">' + riverTalk(r) + "</div></div></section>" +
+        '<section class="wrap sec"><h2 class="sr-only">從資料算出的事實</h2><ul class="facts">' + f + "</ul></section>" +
+        '<section class="wrap sec" id="rv-sec"><div class="sec-h"><h2>河流剖面</h2><p id="rv-sum"></p></div>' +
+        '<div class="pf-bar"><div class="flt">' + tabs + '<div class="flt-g" role="group" aria-label="顏色"><span class="flt-l">顏色</span><div class="seg"><button type="button" data-color="era" aria-pressed="' + (state.color === "era") + '">時代</button><button type="button" data-color="cat" aria-pressed="' + (state.color === "cat") + '">類型</button></div></div></div></div>' +
+        '<div class="tp-wrap" id="rv-wrap"><div class="pf-legend" id="rv-legend"></div><svg class="tp rv" id="rv-svg" role="img" aria-label="' + esc(r.name) + '的河流剖面"></svg><div id="rv-elev"></div><div class="tip" hidden></div></div>' +
+        '<p class="hint">一點一處文資，依距出海口的公里數排在河道兩側，同一段往外疊；淡黃底色是最密集的 ' + RV.meta.win + " 公里。面向下游，左手邊是左岸。河道與公里數都是推算，見下方「河道怎麼來的」。</p></section>" +
+        '<section class="wrap sec"><div class="sec-h"><h2>創建年 × 距出海口</h2><p>橫線是每 ' + RV.meta.bin + ' 公里的中位創建年（5 處以上才畫）</p></div><div class="tp-wrap" id="sc-wrap"></div></section>' +
+        '<section class="wrap sec"><div class="sec-h"><h2>上中下游</h2><p>主流長度三等分，顏色是時代</p></div><ul class="cp">' + comp + "</ul></section>" +
+        '<section class="wrap sec"><div class="sec-h"><h2>淹水潛勢</h2><p>' + esc(RV.meta.floodScenario) + "、0.5 公尺以上</p></div>" +
+        (fl ? '<ul class="nearl">' + fl + "</ul>" : '<div class="talk">' + say("R", "thumb", "沿岸收錄的文資裡，這個情境下沒有一處模擬淹水 0.5 公尺以上。") + "</div>") +
+        '<p class="hint" style="margin-top:10px">' + esc(RV.meta.floodNote) + "</p></section>" +
+        '<section class="wrap sec" style="padding-bottom:56px"><div class="sec-h"><h2>河道怎麼來的</h2></div>' + riverMethod() + "</section></div>";
+      document.title = r.name + "｜溯河而上｜從海口到山頂";
+      drawRiver();
+    });
+  }
+  function curRiver() { var m = location.hash.match(/#\/river\/([^/]+)/); return m && RV ? RV.rivers.filter(function (x) { return x.id === m[1]; })[0] : null; }
+  function drawRiver() {
+    var r = curRiver(), svg = document.getElementById("rv-svg"); if (!r || !svg) return;
+    var W = Math.max(300, document.getElementById("rv-wrap").clientWidth - 20), si = rvState.stem, st = r.stems[si];
+    var c = riverChart(r, si, W);
+    svg.setAttribute("viewBox", "0 0 " + c.W + " " + c.H); svg.setAttribute("height", c.H); svg.innerHTML = c.svg;
+    document.getElementById("rv-elev").innerHTML = W < 640 ? '<p class="hint" style="margin:8px 6px 0">河床高度（公尺，與單元 1 同一把尺）</p>' + riverElevV(r, si, W) : "";
+    var n = r.sites.filter(function (o) { return o.s === si; }).length;
+    document.getElementById("rv-sum").innerHTML = esc(st.name) + "：距出海口 " + st.at.toFixed(0) + "–" + (st.at + st.len).toFixed(0) + " 公里、<b>" + n + "</b> 處；源頭推估約 " + num(st.src) + " 公尺";
+    document.getElementById("rv-legend").innerHTML = (state.color === "era" ? D.eras.map(function (e, i) { return '<span class="ev' + i + '"><i></i>' + esc(e.name) + "</span>"; }) : LV.map(function (n2, i) { return '<span class="lv' + i + '"><i></i>' + n2 + "</span>"; })).join("") + '<span><i class="flk"></i>淹水潛勢 0.5 公尺以上</span>';
+    var sc = document.getElementById("sc-wrap"); if (sc) sc.innerHTML = scatterSVG(r, Math.max(300, sc.clientWidth - 20));
+  }
+  function showRvTip(e) {
+    var wrap = document.getElementById("rv-wrap"); if (!wrap) return;
+    var tp = wrap.querySelector(".tip"), t = e.target.closest && e.target.closest("#rv-svg .dot");
+    if (!t) { tp.hidden = true; return; }
+    var o = RV ? curRiver().sites[+t.dataset.rv] : null, x = D.sites[+t.dataset.i], wr = wrap.getBoundingClientRect(), b = t.getBoundingClientRect();
+    tp.innerHTML = "<b>" + esc(x.n) + "</b>距出海口 " + o.m.toFixed(1) + " 公里・" + (o.b === "L" ? "左岸" : "右岸") + "・離河道 " + num(o.d) + " 公尺<br>" + yearText(x) + "・海拔 " + num(x.h) + " 公尺";
+    tp.hidden = false; tp.style.left = Math.min(Math.max(b.left + b.width / 2 - wr.left, 130), wr.width - 130) + "px"; tp.style.top = (b.top - wr.top) + "px";
+  }
+  document.addEventListener("pointermove", function (e) { if (e.pointerType === "mouse") showRvTip(e); });
+
   /* ---------- 路由 ---------- */
   var cur = "";
   function route() {
     var parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean), page = parts[0] || "home";
     if (page === "s") page = "home";
     document.querySelectorAll("[data-nav]").forEach(function (a) { a.classList.toggle("cur", a.dataset.nav === page); });
-    var ck = page + "/" + (page === "trail" ? parts[1] || "" : "");
+    var ck = page + "/" + (page === "trail" || page === "river" ? parts[1] || "" : "");
     if (ck !== cur) {
       closeCard();
-      if (page === "river") { viewSoon(page); document.title = "溯河而上｜從海口到山頂"; }
+      if (page === "river" && parts[1]) { viewRiver(parts[1]); document.title = "溯河而上｜從海口到山頂"; }
+      else if (page === "river") { viewRivers(); document.title = "溯河而上｜從海口到山頂"; }
       else if (page === "trail" && parts[1]) { viewTrail(parts[1]); document.title = "越嶺古道｜從海口到山頂"; }
       else if (page === "trail") { viewTrails(); document.title = "越嶺古道｜從海口到山頂"; }
       else if (page === "about") { viewAbout(); document.title = "資料說明｜從海口到山頂"; }
@@ -585,10 +788,12 @@
   /* ---------- 事件 ---------- */
   var tip = null;
   document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-open],[data-fact],[data-color],[data-clear],[data-zoom],.dot,.tag"); if (!t) return;
+    var t = e.target.closest("[data-open],[data-fact],[data-color],[data-clear],[data-zoom],[data-stem],.dot,.tag"); if (!t) return;
+    if (t.dataset.stem) { rvState.stem = +t.dataset.stem; document.querySelectorAll("[data-stem]").forEach(function (b) { b.setAttribute("aria-pressed", b === t); }); drawRiver(); return; }
+    if (t.dataset.color && document.getElementById("rv-svg")) { state.color = t.dataset.color; document.querySelectorAll("[data-color]").forEach(function (b) { b.setAttribute("aria-pressed", b === t); }); drawRiver(); return; }
     if (t.dataset.zoom) { trState.zoom = t.dataset.zoom === "1"; document.querySelectorAll("[data-zoom]").forEach(function (b) { b.setAttribute("aria-pressed", b === t); }); drawOne(curTrail()); return; }
-    if (t.dataset.open) { if (/^#\/trail/.test(location.hash)) openCard(+t.dataset.open); else openHash(+t.dataset.open); return; }
-    if (t.classList.contains("dot") || t.classList.contains("tag")) { openHash(+t.dataset.i); return; }
+    if (t.dataset.open) { if (/^#\/(trail|river)/.test(location.hash)) openCard(+t.dataset.open); else openHash(+t.dataset.open); return; }
+    if (t.classList.contains("dot") || t.classList.contains("tag")) { if (/^#\/(river|trail)/.test(location.hash)) openCard(+t.dataset.i); else openHash(+t.dataset.i); return; }
     if (t.dataset.fact) {
       var x = D.facts[+t.dataset.fact];
       setHL(factHL(x), x.k, FACT_FACE[x.k]);
@@ -623,6 +828,7 @@
     clearTimeout(rt);
     rt = setTimeout(function () {
       if (document.getElementById("tp-all-svg")) drawAll();
+      if (document.getElementById("rv-svg")) drawRiver();
       if (document.getElementById("tp-one-svg")) drawOne(curTrail());
       var svg = document.getElementById("pf"); if (!svg || svg.clientWidth === lastW) return;
       lastW = svg.clientWidth; drawProfile();
