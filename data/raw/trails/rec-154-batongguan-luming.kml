@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>八通關古道-鹿鳴吊橋段</name>
+	<open>1</open>
+	<Style id="sn_ylw-pushpin">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>4</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_ylw-pushpin0">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>4</width>
+		</LineStyle>
+	</Style>
+	<Style id="sh_icon6116">
+		<IconStyle>
+			<scale>1.2</scale>
+			<Icon>
+				<href>https://maps.google.com/mapfiles/kml/shapes/placemark_circle_highlight.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<Style id="sn_icon6116">
+		<IconStyle>
+			<scale>0.8</scale>
+			<Icon>
+				<href>https://maps.google.com/mapfiles/kml/paddle/red-circle.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<ListStyle>
+			<ItemIcon>
+				<href>https://maps.google.com/mapfiles/kml/paddle/red-circle-lv.png</href>
+			</ItemIcon>
+		</ListStyle>
+	</Style>
+	<Style id="sn_ylw-pushpin1">
+		<LabelStyle>
+			<color>00000000</color>
+			<scale>0</scale>
+		</LabelStyle>
+		<LineStyle>
+			<color>ff00aaff</color>
+			<width>4</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_icon61160">
+		<IconStyle>
+			<scale>1.2</scale>
+			<Icon>
+				<href>https://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+	<StyleMap id="sn_ylw-pushpin2">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_ylw-pushpin1</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sn_ylw-pushpin0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_icon61160">
+		<IconStyle>
+			<scale>0.8</scale>
+			<Icon>
+				<href>https://maps.google.com/mapfiles/kml/paddle/red-circle.png</href>
+			</Icon>
+			<hotSpot x="32" y="1" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+		<ListStyle>
+			<ItemIcon>
+				<href>https://maps.google.com/mapfiles/kml/paddle/red-circle-lv.png</href>
+			</ItemIcon>
+		</ListStyle>
+	</Style>
+	<StyleMap id="msn_icon6110">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon61160</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon6116</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="msn_icon61100">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_icon6116</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_icon61160</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Folder>
+		<name>八通關古道-鹿鳴吊橋段景點註記</name>
+		<Placemark>
+			<name>木棧橋1</name>
+			<description>2011-08-23 1:52:47PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.263355,23.308129,317.358643</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋5</name>
+			<description>2011-08-23 2:44:56PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.254865,23.312684,297.891968</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋6</name>
+			<description>2011-08-23 2:57:13PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.257384,23.316064,282.751343</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>吊索橋</name>
+			<description>2011-08-23 2:07:30PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.260692,23.31079,320.242432</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>西測入口與鹿鳴駐在所</name>
+			<description>2011-08-23 3:10:53PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.255821,23.318284,275.78186</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>鹿鳴吊橋</name>
+			<description>2011-08-23 3:20:18PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.254043,23.317895,274.099487</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋2</name>
+			<description>2011-08-23 2:14:35PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.259948,23.311824,319.761841</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋3</name>
+			<description>2011-08-23 2:25:57PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.257897,23.311461,314.234253</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋4</name>
+			<description>2011-08-23 2:41:55PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.254753,23.311885,306.06311</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>木棧橋7</name>
+			<description>2011-08-23 3:08:58PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.25621,23.318249,278.665771</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>東側出口</name>
+			<description>2011-08-23 1:41:41PM</description>
+			<styleUrl>#msn_icon61100</styleUrl>
+			<Point>
+				<coordinates>121.263813,23.306992,332.499268</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>八通關古道-鹿鳴吊橋段</name>
+		<open>1</open>
+		<Style>
+			<ListStyle>
+				<listItemType>checkHideChildren</listItemType>
+				<bgColor>00ffffff</bgColor>
+				<maxSnippetLines>2</maxSnippetLines>
+			</ListStyle>
+		</Style>
+		<Placemark>
+			<name>八通關古道-鹿鳴吊橋段</name>
+			<Snippet maxLines="0"></Snippet>
+			<styleUrl>#sn_ylw-pushpin2</styleUrl>
+			<MultiGeometry>
+				<LineString>
+					<tessellate>1</tessellate>
+					<coordinates>
+						121.253759,23.317931,0 121.254035,23.317834,0 121.255788,23.31829,0 121.256239,23.31824,0 121.256417,23.318021,0 121.256565,23.317665,0 121.256654,23.317172,0 121.256686,23.316779,0 121.256718,23.316424,0 121.25671,23.316108,0 121.256567,23.315679,0 121.256491,23.315524,0 121.256276,23.315156,0 121.256104,23.314891,0 121.255762,23.314448,0 121.255145,23.313826,0 121.255041,23.313298,0 121.254933,23.31284,0 121.254851,23.312516,0 121.254635,23.312078,0 121.254445,23.311585,0 121.254315,23.31125700000001,0 121.254891,23.311002,0 121.25542,23.310827,0 121.255872,23.310677,0 121.256304,23.31084,0 121.25652,23.31085,0 121.256649,23.310944,0 121.257054,23.311083,0 121.257384,23.31125700000001,0 121.257734,23.311366,0 121.25801,23.31151,0 121.258258,23.311674,0 121.258409,23.311674,0 121.258776,23.311753,0 121.2589,23.311872,0 121.259219,23.312016,0 121.259435,23.312056,0 121.259586,23.312055,0 121.259639,23.312055,0 121.259844,23.311995,0 121.260055,23.311935,0 121.260081,23.311656,0 121.260199,23.311382,0 121.260495,23.311028,0 121.260592,23.310833,0 121.260688,23.310644,0 121.260979,23.310265,0 121.261232,23.30997,0 121.261404,23.309781,0 121.261496,23.309676,0 121.261641,23.309506,0 121.261845,23.309108,0 121.261834,23.309033,0 121.261823,23.308744,0 121.26179,23.308575,0 121.261957,23.308634,0 121.262081,23.308659,0 121.262297,23.308678,0 121.262626,23.308703,0 121.262982,23.308578,0 121.263203,23.308637,0 121.263203,23.308552,0 121.263073,23.308284,0 121.26283,23.307995,0 121.262641,23.30785600000002,0 121.262786,23.307627,0 121.262931,23.307482,0 121.263082,23.307332,0 121.263324,23.307167,0 121.263615,23.307077,0 121.263772,23.306967,0 
+					</coordinates>
+				</LineString>
+			</MultiGeometry>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>
