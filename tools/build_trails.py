@@ -16,6 +16,12 @@ RAW = os.path.join(ROOT, "data", "raw", "trails")
 SMOOTH = 3          # 平滑：前後各 3 點（約 ±75 公尺）
 SEG = 8             # 坡度：每 8 點（200 公尺）一段
 NEAR_KM = 3         # 沿線文資：離軌跡多少公里內
+# 古道本身就是登錄的文資：線狀文資在清單裡只有一個代表點，常常不在本站的軌跡上，
+# 所以不用距離判斷，直接列出（依文資局登錄名稱比對）
+SELF = {
+    "jinshuiying": ["chunri-jinshuiyinggudao"],
+    "batongguan": ["zhushan-batongguangudao", "yuli-batongguangudao"],
+}
 POI_M = 250         # 有座標的點位：離軌跡多少公尺內才放上剖面
 GRADES = [5, 10, 20]  # 坡度分級（%）：平緩、緩坡、陡、很陡
 
@@ -191,7 +197,14 @@ def main():
         near = []
         lo_lng = min(p[0] for p in pts) - .04; hi_lng = max(p[0] for p in pts) + .04
         lo_lat = min(p[1] for p in pts) - .04; hi_lat = max(p[1] for p in pts) + .04
+        own = []
+        for sid in SELF.get(C["id"], []):
+            si = next(k for k, o in enumerate(coords) if o["id"] == sid)
+            i, d = nearest(pts, coords[si]["lng"], coords[si]["lat"])
+            own.append({"i": si, "d": round(d / 1000, 1)})
         for si, o in enumerate(coords):
+            if any(x["i"] == si for x in own):
+                continue
             if lo_lng <= o["lng"] <= hi_lng and lo_lat <= o["lat"] <= hi_lat:
                 i, d = nearest(pts, o["lng"], o["lat"])
                 if d <= NEAR_KM * 1000:
@@ -204,7 +217,7 @@ def main():
                  "postGap": round(C["post_len"] / C["posts"], 1) if C.get("posts") else None,
                  "ohDiff": [min(chk), max(chk)] if chk else None}
         t = {k: C[k] for k in ("id", "name", "sub", "eras", "color", "where", "official")}
-        t.update(stats=stats, profile=prof, grades=[[round(k, 2), round(g, 1)] for k, g in grades], pois=pois, near=near,
+        t.update(stats=stats, profile=prof, grades=[[round(k, 2), round(g, 1)] for k, g in grades], pois=pois, near=near, own=own,
                  history=[{"y": y, "t": txt, "s": s} for y, txt, s in C["history"]], rec=C["rec"], src=tr["src"],
                  posts=C.get("posts"), postNote=C.get("post_note"), notes=C.get("notes", []),
                  off=[{"n": a, "w": b, "s": c} for a, b, c in C.get("off", [])], offNote=C.get("off_note"))
@@ -236,8 +249,10 @@ def main():
                   "t": "依官方資料點名的駐在所與步道長度：" + "、".join(f"{t['name']} {t['posts']} 處，約每 {t['stats']['postGap']} 公里一處" for t in pg) +
                        "。浸水營與福巴的官方資料沒有完整的駐在所清單，八通關越道只有一小段軌跡，都不計算。", "tr": pg[0]["id"]})
     nn = sum(len(t["near"]) for t in out)
-    facts.append({"k": "沿線的文資", "big": str(nn), "unit": f"處・離軌跡 {NEAR_KM} 公里內",
-                  "t": f"單元 1 的 {fmt(len(sites))} 處文資，離這五條古道 {NEAR_KM} 公里內的只有 {nn} 處。古道上的駐在所與營盤遺址大多沒有登錄為文資，所以本單元的歷史內容取自林業保育署、原民會、文資局與玉管處的公開資料。",
+    ow = [t for t in out if t["own"]]
+    facts.append({"k": "登錄為文資的古道", "big": str(len(ow)), "unit": f"條・沿線其他文資 {nn} 處",
+                  "t": "五條裡，古道本身登錄為文資的有" + "、".join(f"{t['name']}：{sites[t['own'][0]['i']]['n']}（" + "、".join(sites[x['i']]['t'] for x in t["own"]) + "）" for t in ow) +
+                       f"；除了古道本身，離軌跡 {NEAR_KM} 公里內的其他文資有 {nn} 處。古道上的駐在所與營盤遺址大多沒有單獨登錄為文資，所以本單元的歷史內容取自林業保育署、原民會、文資局與玉管處的公開資料。",
                   "tr": None})
     years = sorted({(h["y"], t["name"]) for t in out for h in t["history"] if h["y"]})
     doc = {"meta": {"generated": datetime.date.today().isoformat(), "grades": GRADES, "nearKm": NEAR_KM, "seg": SEG * 25, "smooth": (2 * SMOOTH + 1) * 25,

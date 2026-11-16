@@ -525,6 +525,7 @@
       var pois = t.pois.map(function (p, i) {
         return '<tr><td class="n">' + (i + 1) + '</td><td class="n">' + p.km.toFixed(1) + '</td><td><i class="pk k-' + p.k + '"></i>' + esc(p.n) + '</td><td class="n">' + num(p.h) + (p.oh ? "<small>官方 " + num(p.oh) + "</small>" : "") + "</td><td>" + (KINDS[p.k] || "") + '</td><td class="pos">' + (p.pos === "km" ? "官方里程 " + p.ok + " K，等比例放上" : "官方座標（離軌跡 " + p.d + " 公尺）") + "</td></tr>";
       }).join("");
+      var own = (t.own || []).map(function (n) { var o = D.sites[n.i]; return tile(n.i, o.t + "・代表座標離本站軌跡 " + n.d + " 公里・海拔 " + num(o.h) + " 公尺"); }).join("");
       var near = t.near.map(function (n) { return tile(n.i, "軌跡 " + n.km + " 公里處・離軌跡 " + n.d + " 公里・海拔 " + num(D.sites[n.i].h) + " 公尺"); }).join("");
       app.innerHTML = '<div class="ascent trail" style="--tc:' + t.color + '"><section class="lhero tr-hero"><div class="wrap"><a class="back" href="#/trail">← 越嶺古道</a>' +
         '<p class="kicker">' + esc(t.where) + "</p><h1>" + esc(t.name) + '<span class="eras">' + eraTags(t) + '</span></h1><p class="home-sub">' + esc(t.sub) + "</p>" +
@@ -546,8 +547,11 @@
         '<section class="wrap sec"><div class="sec-h"><h2>歷史</h2><p>逐句標出處</p></div><ol class="tl">' + t.history.map(function (h) {
           return '<li style="--tc:' + t.color + '"><span class="tl-y">' + (h.y || "") + "</span><div><p>" + esc(h.t) + "</p>" + (h.s ? '<p class="tl-s">出處：' + srcLink(h.s) + "</p>" : "") + "</div></li>";
         }).join("") + "</ol></section>" +
-        '<section class="wrap sec"><div class="sec-h"><h2>沿線的文資</h2><p>單元 1 的文資清單裡，離軌跡 ' + TR.meta.nearKm + " 公里內</p></div>" +
-        (near ? '<ul class="top10 tiles">' + near + "</ul>" : '<div class="talk">' + say("A", "scratch", "老實說，這條古道 " + TR.meta.nearKm + " 公里內沒有任何一處登錄的文資。駐在所遺址再多，也還沒有登錄。") + "</div>") + "</section>" +
+        (own ? '<section class="wrap sec"><div class="sec-h"><h2>古道本身就是文資</h2><p>文資局登錄 ' + t.own.length + " 筆</p></div>" +
+          '<div class="talk">' + say("R", "explain", "古道是一條長長的線，但文資清單裡每一筆只有一個代表座標" + (t.own.length > 1 ? "，" + t.own.length + " 筆分別記在" + t.own.map(function (n) { return D.sites[n.i].t; }).join("和") : "，記在" + D.sites[t.own[0].i].t) + "。" + (t.own.some(function (n) { return n.d > TR.meta.nearKm; }) ? "代表點離本站這段軌跡比較遠，所以不用距離判斷，直接列在這裡；卡片上的海拔是代表點的海拔，不是古道的高度。" : "卡片上的海拔是代表點的海拔，不是古道的最高處。")) + "</div>" +
+          '<ul class="top10 tiles">' + own + "</ul></section>" : "") +
+        '<section class="wrap sec"><div class="sec-h"><h2>沿線的其他文資</h2><p>單元 1 的文資清單裡，離軌跡 ' + TR.meta.nearKm + " 公里內</p></div>" +
+        (near ? '<ul class="top10 tiles">' + near + "</ul>" : '<div class="talk">' + say("A", "scratch", (own ? "除了古道本身，" : "老實說，") + "這條古道 " + TR.meta.nearKm + " 公里內沒有其他登錄的文資。駐在所遺址再多，也還沒有單獨登錄。") + "</div>") + "</section>" +
         '<section class="wrap sec" style="padding-bottom:56px"><nav class="tr-nav">' + (prev ? '<a class="btn" href="#/trail/' + prev.id + '">← ' + esc(prev.name) + "</a>" : "<span></span>") + '<a class="btn" href="#/trail">五條古道總覽</a>' + (next ? '<a class="btn" href="#/trail/' + next.id + '">' + esc(next.name) + " →</a>" : "<span></span>") + "</nav></section></div>";
       document.title = t.name + "｜越嶺古道｜從海口到山頂";
       drawOne(t);
