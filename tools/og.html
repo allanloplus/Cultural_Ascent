@@ -1,0 +1,36 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8">
+<!-- 分享縮圖原稿：用瀏覽器以 1200×630 開啟後截圖，存成 assets/og.png。數字改了要跟著改。 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1200px;height:630px;overflow:hidden;background:#f6f1e7;font-family:"Noto Sans TC",sans-serif;color:#2b2521;position:relative}
+.bg{position:absolute;inset:0;background:radial-gradient(700px 420px at 88% 8%,#cfe8dd,transparent 70%),linear-gradient(180deg,transparent 70%,rgba(106,168,196,.18))}
+.k{position:absolute;left:64px;top:52px;font-size:24px;font-weight:700;letter-spacing:.16em;color:#2f6b5a;display:flex;align-items:center;gap:14px}
+.k img{width:46px;height:46px;border-radius:12px}
+h1{position:absolute;left:62px;top:122px;font-family:"LXGW WenKai TC",serif;font-weight:700;font-size:84px;line-height:1.2;letter-spacing:.04em}
+.sub{position:absolute;left:66px;top:236px;font-family:"LXGW WenKai TC",serif;font-size:34px;color:#2f6b5a}
+.big{position:absolute;left:66px;top:300px;font-size:24px;color:#6c6058;line-height:1.6}
+.big b{font-family:"LXGW WenKai TC",serif;font-size:46px;color:#2b2521;margin:0 4px}
+.chars{position:absolute;right:30px;top:40px;display:flex;align-items:flex-end;gap:6px;z-index:2}
+.chars img{height:360px;filter:drop-shadow(0 10px 14px rgba(40,25,10,.2))}
+.chars img+img{height:318px}
+svg{position:absolute;left:0;bottom:0}
+.url{position:absolute;right:40px;bottom:14px;background:rgba(246,241,231,.9);padding:2px 10px;border-radius:8px;font-size:21px;color:#6c6058;letter-spacing:.04em;z-index:3}
+</style></head><body><div class="bg"></div>
+<div class="k"><img src="../assets/icon.svg">全臺 3,032 處有形文資</div>
+<h1>從海口到山頂</h1>
+<p class="sub">文資住在多高？</p>
+<p class="big">一半在<b>20</b>公尺以下・500 公尺以上只有<b>51</b>處</p>
+<div class="chars"><img src="../assets/characters/allan-wave.webp"><img src="../assets/characters/arale-wave.webp"></div>
+<svg width="1200" height="190" viewBox="0 0 1200 190" id="m"></svg>
+<span class="url">cultural-ascent.123hi.org</span>
+<script>
+/* 山的剪影＋山腳密、山頂稀的文資點（示意） */
+var s='<path d="M0 190V150C120 150 200 140 300 120S460 40 560 20 700 70 780 100 980 140 1200 150V190Z" fill="#d6c6ae"/>';
+s+='<path d="M0 166c20-8 40 8 60 0s40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0 40 8 60 0V190H0Z" fill="#6aa8c4" opacity=".45"/>';
+var col=['#14876b','#b02a2a','#c08400','#14876b','#14876b','#1d5fae','#a85a1c'],r=1;
+function rnd(){r=(r*9301+49297)%233280;return r/233280}
+for(var i=0;i<260;i++){var x=40+rnd()*1120,y=150-Math.pow(rnd(),14)*125;var top=x<300||x>780?0:1;if(y<132&&(x<380||x>760))y=132+rnd()*16;s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="5" fill="'+col[i%7]+'" stroke="#f6f1e7" stroke-width="1.5"/>'}
+document.getElementById('m').innerHTML=s;
+</script>
+</body></html>
